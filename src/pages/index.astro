@@ -1,14 +1,36 @@
 ---
+import { Icon } from 'astro-icon/components';
 import Layout from '~/layouts/PageLayout.astro';
 
 import Hero from '~/components/widgets/Hero.astro';
-import Features from '~/components/widgets/Features.astro';
-import CallToAction from '~/components/widgets/CallToAction.astro';
+import Button from '~/components/ui/Button.astro';
+import WidgetWrapper from '~/components/ui/WidgetWrapper.astro';
 
 const metadata = {
   title: 'fastbatch — Production ML & AI Agents',
   ignoreTitleTemplate: true,
 };
+
+const highlights = [
+  { text: 'Proven ML expertise', icon: 'tabler:award' },
+  { text: 'From research to production', icon: 'tabler:rocket' },
+  { text: 'Classical ML to LLM agents', icon: 'tabler:robot' },
+];
+
+const cards = [
+  {
+    icon: 'tabler:article',
+    title: 'From the blog',
+    text: 'Notes on shipping ML and AI systems to production, plus open-source courses.',
+    action: { text: 'Read on Substack', href: 'https://fastbatch.substack.com/', target: '_blank' },
+  },
+  {
+    icon: 'tabler:message-circle',
+    title: 'Have a project in mind?',
+    text: "Tell us what you're building and we'll tell you honestly whether we can help.",
+    action: { text: 'Get in touch', href: '/contact' },
+  },
+];
 ---
 
 <Layout metadata={metadata}>
@@ -20,76 +42,44 @@ const metadata = {
     </Fragment>
 
     <Fragment slot="subtitle">
-      fastbatch is senior ML engineering for teams building real products with AI — from production ML systems and AI
-      agents to the roadmaps and training that get your team there.
+      We help teams ship AI that actually works, from production ML systems and AI agents to the roadmaps and training
+      that get your team there.
     </Fragment>
   </Hero>
 
-  <!-- Features Widget: Services teaser *************** -->
+  <!-- Highlights ******************* -->
 
-  <Features
-    id="services"
-    tagline="What I do"
-    title="Services"
-    subtitle="Independent, hands-on ML engineering — from strategy to shipped systems."
-    items={[
+  <WidgetWrapper id="highlights" containerClass="max-w-5xl pt-0 md:pt-0 lg:pt-0 pb-8 md:pb-10 lg:pb-12">
+    <ul
+      class="flex flex-col sm:flex-row sm:justify-center gap-4 sm:gap-10 border-y border-gray-200 dark:border-slate-800 py-6"
+    >
       {
-        title: 'Production ML Engineering',
-        description:
-          'Design, build, and ship ML systems to production — data pipelines, model training, deployment, and monitoring, across classical ML, deep learning, and LLM-based systems.',
-        icon: 'tabler:rocket',
-      },
+        highlights.map(({ text, icon }) => (
+          <li class="flex items-center justify-center gap-2 text-muted font-medium">
+            <Icon name={icon} class="w-5 h-5 text-accent dark:text-slate-300" />
+            {text}
+          </li>
+        ))
+      }
+    </ul>
+  </WidgetWrapper>
+
+  <!-- Blog + contact ******************* -->
+
+  <WidgetWrapper id="next" containerClass="max-w-5xl pt-4 md:pt-6 lg:pt-6">
+    <div class="grid gap-6 md:grid-cols-2">
       {
-        title: 'AI Roadmaps & Strategy',
-        description:
-          'Help companies figure out where and how to integrate AI into their products — practical roadmaps grounded in what your data and team can actually support.',
-        icon: 'tabler:map',
-      },
-      {
-        title: 'AI Agents & LLM Systems',
-        description:
-          'AI agents and multi-agent systems that handle real workflows, with evaluation and red-teaming built in.',
-        icon: 'tabler:robot',
-      },
-      {
-        title: 'Technical Training',
-        description:
-          'Hands-on workshops for engineering teams ramping up on ML engineering, LLM/agent frameworks, and evaluation practices.',
-        icon: 'tabler:school',
-      },
-    ]}
-  />
-
-  <!-- CallToAction Widget: Substack blog ******* -->
-
-  <CallToAction
-    actions={[
-      {
-        variant: 'primary',
-        text: 'Read the blog on Substack',
-        href: 'https://fastbatch.substack.com/',
-        target: '_blank',
-      },
-    ]}
-  >
-    <Fragment slot="title">From the blog</Fragment>
-
-    <Fragment slot="subtitle">Notes on shipping ML and AI systems to production, on Substack.</Fragment>
-  </CallToAction>
-
-  <!-- CallToAction Widget *********** -->
-
-  <CallToAction
-    actions={[
-      {
-        variant: 'primary',
-        text: 'Get in touch',
-        href: '/contact',
-      },
-    ]}
-  >
-    <Fragment slot="title">Have a project in mind?</Fragment>
-
-    <Fragment slot="subtitle">Let's talk about what you're building and how I can help.</Fragment>
-  </CallToAction>
+        cards.map(({ icon, title, text, action }) => (
+          <div class="flex flex-col p-8 rounded-lg bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800">
+            <Icon name={icon} class="w-8 h-8 text-accent dark:text-slate-300 mb-4" />
+            <h2 class="text-2xl font-bold font-heading dark:text-white">{title}</h2>
+            <p class="mt-2 mb-6 text-muted">{text}</p>
+            <div class="mt-auto">
+              <Button variant="primary" {...action} />
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </WidgetWrapper>
 </Layout>
