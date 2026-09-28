@@ -1,0 +1,49 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import HeroText from '~/components/widgets/HeroText.astro';
+import Features2 from '~/components/widgets/Features2.astro';
+
+const metadata = {
+  title: 'Contact',
+};
+---
+
+<Layout metadata={metadata}>
+  <!-- HeroText Widget ******************* -->
+
+  <HeroText
+    title="Let's Connect!"
+    subtitle="Tell us what you're building. We read every message and usually reply within a couple of days."
+  />
+
+  <!-- Features2 Widget ************** -->
+
+  <Features2
+    columns={2}
+    items={[
+      {
+        title: 'Email',
+        description: '<a href="mailto:fast.batch.ai@gmail.com" class="hover:underline">fast.batch.ai@gmail.com</a>',
+        icon: 'tabler:mail',
+      },
+      {
+        title: 'LinkedIn',
+        description:
+          '<a href="https://www.linkedin.com/in/amal-f-64302555/" target="_blank" rel="noopener noreferrer" class="hover:underline">linkedin.com/in/amal-f-64302555</a>',
+        icon: 'tabler:brand-linkedin',
+      },
+      {
+        title: 'GitHub',
+        description:
+          '<a href="https://github.com/fastbatchai" target="_blank" rel="noopener noreferrer" class="hover:underline">github.com/fastbatchai</a>',
+        icon: 'tabler:brand-github',
+      },
+      {
+        title: 'Blog',
+        description:
+          '<a href="https://fastbatch.substack.com/" target="_blank" rel="noopener noreferrer" class="hover:underline">fastbatch on Substack</a>',
+        icon: 'tabler:article',
+      },
+    ]}
+  />
+</Layout>

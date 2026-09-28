@@ -1,0 +1,95 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+
+import Hero from '~/components/widgets/Hero.astro';
+import Features from '~/components/widgets/Features.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+
+const metadata = {
+  title: 'fastbatch — Production ML & AI Agents',
+  ignoreTitleTemplate: true,
+};
+---
+
+<Layout metadata={metadata}>
+  <!-- Hero Widget ******************* -->
+
+  <Hero actions={[{ variant: 'primary', text: 'View services', href: '/services' }]}>
+    <Fragment slot="title">
+      Machine learning, <span class="text-accent dark:text-white">shipped to production</span>
+    </Fragment>
+
+    <Fragment slot="subtitle">
+      fastbatch is senior ML engineering for teams building real products with AI — from production ML systems and AI
+      agents to the roadmaps and training that get your team there.
+    </Fragment>
+  </Hero>
+
+  <!-- Features Widget: Services teaser *************** -->
+
+  <Features
+    id="services"
+    tagline="What I do"
+    title="Services"
+    subtitle="Independent, hands-on ML engineering — from strategy to shipped systems."
+    items={[
+      {
+        title: 'Production ML Engineering',
+        description:
+          'Design, build, and ship ML systems to production — data pipelines, model training, deployment, and monitoring, across classical ML, deep learning, and LLM-based systems.',
+        icon: 'tabler:rocket',
+      },
+      {
+        title: 'AI Roadmaps & Strategy',
+        description:
+          'Help companies figure out where and how to integrate AI into their products — practical roadmaps grounded in what your data and team can actually support.',
+        icon: 'tabler:map',
+      },
+      {
+        title: 'AI Agents & LLM Systems',
+        description:
+          'AI agents and multi-agent systems that handle real workflows, with evaluation and red-teaming built in.',
+        icon: 'tabler:robot',
+      },
+      {
+        title: 'Technical Training',
+        description:
+          'Hands-on workshops for engineering teams ramping up on ML engineering, LLM/agent frameworks, and evaluation practices.',
+        icon: 'tabler:school',
+      },
+    ]}
+  />
+
+  <!-- CallToAction Widget: Substack blog ******* -->
+
+  <CallToAction
+    actions={[
+      {
+        variant: 'primary',
+        text: 'Read the blog on Substack',
+        href: 'https://fastbatch.substack.com/',
+        target: '_blank',
+      },
+    ]}
+  >
+    <Fragment slot="title">From the blog</Fragment>
+
+    <Fragment slot="subtitle">Notes on shipping ML and AI systems to production, on Substack.</Fragment>
+  </CallToAction>
+
+  <!-- CallToAction Widget *********** -->
+
+  <CallToAction
+    actions={[
+      {
+        variant: 'primary',
+        text: 'Get in touch',
+        href: '/contact',
+      },
+    ]}
+  >
+    <Fragment slot="title">Have a project in mind?</Fragment>
+
+    <Fragment slot="subtitle">Let's talk about what you're building and how I can help.</Fragment>
+  </CallToAction>
+</Layout>

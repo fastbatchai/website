@@ -1,0 +1,99 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { Icon } from 'astro-icon/components';
+import WidgetWrapper from '~/components/ui/WidgetWrapper.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+import Layout from '~/layouts/PageLayout.astro';
+
+// Profile photo: src/assets/images/team/amal.{jpg,jpeg,png,webp}. Falls back to initials if missing.
+const photos = import.meta.glob<{ default: ImageMetadata }>('/src/assets/images/team/amal.{jpg,jpeg,png,webp}', {
+  eager: true,
+});
+const photo = Object.values(photos)[0]?.default;
+
+const links = [
+  { text: 'LinkedIn', href: 'https://www.linkedin.com/in/amal-f-64302555/', icon: 'tabler:brand-linkedin' },
+  { text: 'GitHub', href: 'https://github.com/amalF', icon: 'tabler:brand-github' },
+];
+
+const metadata = {
+  title: 'About',
+};
+---
+
+<Layout metadata={metadata}>
+  <!-- Mission ******************* -->
+
+  <WidgetWrapper id="mission" containerClass="max-w-4xl pt-16 md:pt-24 pb-10 md:pb-12 text-center">
+    <p class="text-base text-secondary dark:text-blue-200 font-bold tracking-wide uppercase mb-4">Our mission</p>
+    <h1 class="text-3xl md:text-5xl font-bold leading-tight tracking-tighter font-heading text-balance">
+      Bridging the gap between <span class="text-accent dark:text-white">cutting&#8209;edge AI</span> and real-world applications
+    </h1>
+    <p class="mt-6 text-lg md:text-xl text-muted max-w-2xl mx-auto text-balance">
+      We help teams take AI out of research papers and prototypes, and turn it into systems that hold up in production.
+    </p>
+  </WidgetWrapper>
+
+  <!-- Team ******************* -->
+
+  <WidgetWrapper id="team" containerClass="max-w-3xl pt-6 md:pt-8">
+    <p class="text-base text-secondary dark:text-blue-200 font-bold tracking-wide uppercase mb-6 text-center">
+      The team
+    </p>
+    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8">
+      {
+        photo ? (
+          <Image
+            src={photo}
+            alt="Amal Feriani"
+            width={256}
+            height={256}
+            class="w-28 h-28 md:w-32 md:h-32 rounded-full object-cover shrink-0"
+          />
+        ) : (
+          <div
+            class="w-28 h-28 md:w-32 md:h-32 rounded-full shrink-0 flex items-center justify-center bg-primary/10 dark:bg-slate-800 text-primary dark:text-slate-200 text-3xl font-bold"
+            aria-hidden="true"
+          >
+            AF
+          </div>
+        )
+      }
+      <div class="text-center sm:text-left">
+        <h2 class="text-2xl font-bold font-heading dark:text-white">Amal Feriani</h2>
+        <p class="text-muted font-medium mt-1">Founder &amp; ML Engineer</p>
+        <p class="mt-4 text-muted leading-relaxed">
+          Amal is an ML engineer with 9+ years of experience, from classical ML to deep learning, computer vision,
+          reinforcement learning, and LLMs. Amal has worked on both sides of the field, doing research and shipping ML
+          products to production, which is exactly the gap fastbatch exists to close.
+        </p>
+        <ul class="mt-5 flex flex-wrap gap-x-6 gap-y-2 justify-center sm:justify-start">
+          {
+            links.map(({ text, href, icon }) => (
+              <li>
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-1.5 font-medium text-primary dark:text-slate-200 hover:underline"
+                >
+                  <Icon name={icon} class="w-5 h-5" />
+                  {text}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </WidgetWrapper>
+
+  <!-- CallToAction Widget *********** -->
+
+  <CallToAction
+    actions={[{ variant: 'primary', text: 'Get in touch', href: '/contact' }]}
+    title="Let's build something that works"
+    subtitle="Tell us what you're building and how we can help."
+  />
+</Layout>

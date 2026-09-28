@@ -1,0 +1,101 @@
+---
+import CallToAction from '~/components/widgets/CallToAction.astro';
+import Content from '~/components/widgets/Content.astro';
+import Features2 from '~/components/widgets/Features2.astro';
+import Hero from '~/components/widgets/Hero.astro';
+import Layout from '~/layouts/PageLayout.astro';
+
+const metadata = {
+  title: 'Services',
+};
+---
+
+<Layout metadata={metadata}>
+  <!-- Hero Widget ******************* -->
+
+  <Hero
+    title="We help teams ship AI that actually works"
+    subtitle="Production ML systems, AI roadmaps, agent/LLM development, and training."
+    actions={[{ variant: 'primary', text: 'Get in touch', href: '/contact' }]}
+  />
+
+  <!-- Features2 Widget ************** -->
+
+  <Features2
+    title="What I can help with"
+    columns={2}
+    items={[
+      {
+        title: 'Production ML Engineering',
+        description:
+          'End-to-end ML system delivery: data pipelines, model training, deployment, and monitoring across classical ML, deep learning, and LLM-based systems. Getting a model out of a notebook and into something your team can operate.',
+        icon: 'tabler:rocket',
+      },
+      {
+        title: 'AI Roadmaps & Strategy',
+        description:
+          "Not sure where AI fits in your product? We assess your data, use cases, and team, then propose a practical roadmap: what to build first, what to buy or skip, and what it'll take to get there.",
+        icon: 'tabler:map',
+      },
+      {
+        title: 'AI Agents & LLM Systems',
+        description:
+          'Design and build AI agents and multi-agent systems that use tools and handle real workflows, with the evaluation and red-teaming that keeps them reliable and safe in production.',
+        icon: 'tabler:robot',
+      },
+      {
+        title: 'Technical Training',
+        description:
+          'Hands-on workshops for engineering teams ramping up on ML engineering practice, agent frameworks, or LLM evaluation methodology. See <a href="https://fastbatch.substack.com/" target="_blank" rel="noopener" class="underline hover:text-primary">our blog</a> for open-source courses.',
+        icon: 'tabler:school',
+      },
+    ]}
+  />
+
+  <!-- Content Widget **************** -->
+
+  <Content
+    isReversed
+    tagline="How it works"
+    title="A focused, hands-on engagement"
+    items={[
+      {
+        title: 'Scope',
+        description: "A short call to understand what you're building and where the risk or bottleneck is.",
+        icon: 'tabler:message-circle',
+      },
+      {
+        title: 'Build',
+        description: 'Working code and demos, iterated with your team rather than delivered as a black box.',
+        icon: 'tabler:code',
+      },
+      {
+        title: 'Hand off',
+        description: 'Documentation and knowledge transfer so your team can own and extend the system.',
+        icon: 'tabler:git-pull-request',
+      },
+    ]}
+    image={{
+      src: '~/assets/images/brand/fast_batch_1024.png',
+      alt: 'fastbatch',
+    }}
+  >
+    <Fragment slot="content">
+      <h3 class="text-2xl font-bold tracking-tight dark:text-white sm:text-3xl mb-2">How engagements work</h3>
+    </Fragment>
+  </Content>
+
+  <!-- CallToAction Widget *********** -->
+
+  <CallToAction
+    actions={[
+      {
+        variant: 'primary',
+        text: 'Get in touch',
+        href: '/contact',
+      },
+    ]}
+    title="Have a project in mind?"
+    subtitle="Tell us what you're building. Happy to talk through whether we're a fit."
+  />
+</Layout>
