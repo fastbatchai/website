@@ -1,6 +1,6 @@
 site:
   name: fastbatch
-  site: 'https://fastbatch.dev' # TODO: set production domain
+  site: 'https://fastbatch.ai'
   base: '/'
   trailingSlash: false
 
