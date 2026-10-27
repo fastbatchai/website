@@ -66,7 +66,8 @@ apps:
 analytics:
   vendors:
     googleAnalytics:
-      id: null # or "G-XXXXXXXXXX"
+      id: 'G-7C5K7WBML6'
+      partytown: false # Partytown isn't installed; leaving this on would stop the tag from running
 
 ui:
   theme: 'system' # Values: "system" | "light" | "dark" | "light:only" | "dark:only"

@@ -3,15 +3,17 @@ title: 'Privacy Policy'
 layout: '~/layouts/MarkdownLayout.astro'
 ---
 
-_Last updated_: September 28, 2026
+_Last updated_: October 27, 2026
 
 fastbatch respects your privacy. This page explains what happens to your information when you visit this website.
 
 ## What we collect
 
-Nothing, directly. This website has no sign-up, no contact form, no analytics, and no advertising or tracking cookies.
+This website has no sign-up, no contact form, and no advertising.
 
-The only thing stored in your browser is your light or dark theme preference, so the site remembers it on your next visit. It never leaves your device.
+We use Google Analytics to understand how visitors use the site, such as which pages are viewed, how long visits last, and roughly where visitors come from. Google Analytics sets cookies in your browser and collects information such as your approximate location, device and browser type, and the pages you visit. We use this information only in aggregate, to improve the site. See [how Google uses information from sites that use its services](https://policies.google.com/technologies/partner-sites). You can opt out with the [Google Analytics Opt-out Browser Add-on](https://tools.google.com/dlpage/gaoptout) or by blocking cookies in your browser.
+
+Your light or dark theme preference is also stored in your browser, so the site remembers it on your next visit. It never leaves your device.
 
 ## Hosting
 
