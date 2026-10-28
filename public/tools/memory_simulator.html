@@ -1,313 +1,970 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-7C5K7WBML6"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-7C5K7WBML6');
-</script>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Attention Memory Simulator</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
-<style>
-:root{
-  --bg:#eef0f1; --panel:#ffffff; --ink:#2c3f4d; --muted:#5f707c; --line:#9aa8b2; --soft:#e2e8ec;
-  --accent:#d98a1c; --accent-bg:#fbeedb; --danger:#b3261e;
-  --btn-on-bg:#2c3f4d; --btn-on-ink:#ffffff;
-  --sans:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
-  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#141b20; --panel:#1c252c; --ink:#dbe4ea; --muted:#9aabb6; --line:#4d5e69; --soft:#26323a;
-  --accent:#f0a43a; --accent-bg:#4a3313; --danger:#ff8a80;
-  --btn-on-bg:#dbe4ea; --btn-on-ink:#141b20; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#141b20; --panel:#1c252c; --ink:#dbe4ea; --muted:#9aabb6; --line:#4d5e69; --soft:#26323a;
-  --accent:#f0a43a; --accent-bg:#4a3313; --danger:#ff8a80;
-  --btn-on-bg:#dbe4ea; --btn-on-ink:#141b20; color-scheme:dark}
-body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55}
-.page{max-width:1160px;margin:0 auto;padding-inline:16px;padding-block:28px 40px;display:flex;flex-direction:column;gap:18px}
-header{display:flex;flex-direction:column;gap:6px}
-.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-h1{font-size:clamp(26px,4vw,36px);line-height:1.15;margin:0;font-weight:600;text-wrap:balance}
-.lede{max-width:72ch;margin:0;color:var(--muted)}
-.bar{display:flex;flex-direction:column;gap:12px;background:var(--panel);border:1.5px dashed var(--line);border-radius:14px;padding:14px}
-.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.lbl{font-size:13px;color:var(--muted)}
-form.input{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start}
-.field{flex:1 1 320px;display:flex;flex-direction:column;gap:4px;min-width:0}
-.field label{font-size:13px;color:var(--muted)}
-input[type=text]{font:inherit;font-size:15px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);width:100%;box-sizing:border-box}
-input[type=text][aria-invalid=true]{border-color:var(--danger)}
-.err{font-size:13px;color:var(--danger);min-height:18px}
-.presets{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.chip{font-size:13px;padding:4px 10px;border-radius:999px}
-.sent{display:flex;flex-wrap:wrap;gap:6px}
-.tok{display:inline-flex;flex-direction:column;align-items:center;padding:5px 12px;border-radius:8px;border:1px solid var(--line);font-size:15px;background:var(--panel);cursor:pointer}
-.tok small{font-family:var(--mono);font-size:11px;color:var(--muted)}
-.tok.done{background:var(--soft)}
-.tok.cur{background:var(--accent);border-color:var(--accent);color:#2a1a03}
-.tok.cur small{color:#4a2d05}
-.tok.fut{opacity:.4}
-button,select{font:inherit;font-size:14px;padding:7px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
-button:hover:not(:disabled){border-color:var(--ink)}
-button:focus-visible,select:focus-visible,input:focus-visible,.tok:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-button:disabled{opacity:.4;cursor:default}
-button.on,button.primary{background:var(--btn-on-bg);color:var(--btn-on-ink);border-color:var(--btn-on-bg)}
-.panels{display:flex;flex-wrap:wrap;gap:16px}
-.pane{background:var(--panel);border:1.5px dashed var(--line);border-radius:14px;padding:16px;min-width:0;display:flex;flex-direction:column;gap:8px}
-.pane.kv{flex:1 1 340px}.pane.st{flex:2 1 480px}
-.pane h2{font-size:17px;margin:0;font-weight:600}
-.sub{font-size:13px;color:var(--muted);margin:0}
-.sec{font-size:12px;font-weight:600;margin-top:8px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-.scroll{overflow-x:auto}
-table{border-collapse:collapse;font-family:var(--mono);font-size:12px;width:100%;font-variant-numeric:tabular-nums}
-td,th{border:1px solid var(--soft);padding:5px 6px;text-align:center;white-space:nowrap}
-th{font-family:var(--sans);font-weight:500;color:var(--muted);font-size:12px}
-tr.new td{background:var(--accent-bg)}
-.rule{font-family:var(--mono);font-size:13px;padding:7px 10px;border-radius:8px;background:var(--soft)}
-.mono{font-family:var(--mono);font-size:12px;color:var(--muted);overflow-wrap:anywhere}
-.eq{display:flex;align-items:center;gap:8px;width:max-content}
-.op{font-size:20px;color:var(--muted)}
-.mat{display:flex;flex-direction:column;align-items:center;gap:4px}
-.mat .lab{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap}
-.grid{display:grid;gap:2px}
-.grid div{height:28px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;border:1px solid var(--soft);border-radius:4px;font-variant-numeric:tabular-nums}
-.grid.d8 div{height:24px;font-size:10px}
-.grid.added div{border-color:var(--accent)}
-.mem{font-size:13px;color:var(--muted)}
-.mem b{color:var(--ink);font-weight:600}
-.out{padding:9px 12px;border-radius:8px;background:var(--btn-on-bg);color:var(--btn-on-ink);font-family:var(--mono);font-size:13px;overflow-wrap:anywhere}
-.small{font-size:12.5px;color:var(--muted);line-height:1.6;overflow-wrap:anywhere}
-.note{background:var(--panel);border:1.5px dashed var(--line);border-radius:14px;padding:14px 16px}
-.note p{margin:0;max-width:85ch}
-.howto{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
-.howto div{font-size:14px}
-.howto b{display:block;font-weight:600;margin-bottom:2px}
-footer{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 16px;border-top:1px solid var(--soft);padding-top:14px}
-footer a{color:var(--ink)}
-@media (prefers-reduced-motion:no-preference){.grid div{transition:background-color .25s}}
-</style>
-</head>
-<body style="margin:0">
+  <head>
+    <meta charset="utf-8" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7C5K7WBML6"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', 'G-7C5K7WBML6');
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Attention Memory Simulator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+    />
+    <style>
+      :root {
+        --bg: #eef0f1;
+        --panel: #ffffff;
+        --ink: #2c3f4d;
+        --muted: #5f707c;
+        --line: #9aa8b2;
+        --soft: #e2e8ec;
+        --accent: #d98a1c;
+        --accent-bg: #fbeedb;
+        --danger: #b3261e;
+        --btn-on-bg: #2c3f4d;
+        --btn-on-ink: #ffffff;
+        --sans: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+        --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) {
+          --bg: #141b20;
+          --panel: #1c252c;
+          --ink: #dbe4ea;
+          --muted: #9aabb6;
+          --line: #4d5e69;
+          --soft: #26323a;
+          --accent: #f0a43a;
+          --accent-bg: #4a3313;
+          --danger: #ff8a80;
+          --btn-on-bg: #dbe4ea;
+          --btn-on-ink: #141b20;
+          color-scheme: dark;
+        }
+      }
+      :root[data-theme='dark'] {
+        --bg: #141b20;
+        --panel: #1c252c;
+        --ink: #dbe4ea;
+        --muted: #9aabb6;
+        --line: #4d5e69;
+        --soft: #26323a;
+        --accent: #f0a43a;
+        --accent-bg: #4a3313;
+        --danger: #ff8a80;
+        --btn-on-bg: #dbe4ea;
+        --btn-on-ink: #141b20;
+        color-scheme: dark;
+      }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--sans);
+        font-size: 15px;
+        line-height: 1.55;
+      }
+      .page {
+        max-width: 1160px;
+        margin: 0 auto;
+        padding-inline: 16px;
+        padding-block: 28px 40px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      header {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .eyebrow {
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      h1 {
+        font-size: clamp(26px, 4vw, 36px);
+        line-height: 1.15;
+        margin: 0;
+        font-weight: 600;
+        text-wrap: balance;
+      }
+      .lede {
+        max-width: 72ch;
+        margin: 0;
+        color: var(--muted);
+      }
+      .bar {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        background: var(--panel);
+        border: 1.5px dashed var(--line);
+        border-radius: 14px;
+        padding: 14px;
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+      .lbl {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      form.input {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: flex-start;
+      }
+      .field {
+        flex: 1 1 320px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 0;
+      }
+      .field label {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      input[type='text'] {
+        font: inherit;
+        font-size: 15px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        color: var(--ink);
+        width: 100%;
+        box-sizing: border-box;
+      }
+      input[type='text'][aria-invalid='true'] {
+        border-color: var(--danger);
+      }
+      .err {
+        font-size: 13px;
+        color: var(--danger);
+        min-height: 18px;
+      }
+      .presets {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+      }
+      .chip {
+        font-size: 13px;
+        padding: 4px 10px;
+        border-radius: 999px;
+      }
+      .sent {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .tok {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 5px 12px;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        font-size: 15px;
+        background: var(--panel);
+        cursor: pointer;
+      }
+      .tok small {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .tok.done {
+        background: var(--soft);
+      }
+      .tok.cur {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #2a1a03;
+      }
+      .tok.cur small {
+        color: #4a2d05;
+      }
+      .tok.fut {
+        opacity: 0.4;
+      }
+      button,
+      select {
+        font: inherit;
+        font-size: 14px;
+        padding: 7px 12px;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        color: var(--ink);
+        cursor: pointer;
+      }
+      button:hover:not(:disabled) {
+        border-color: var(--ink);
+      }
+      button:focus-visible,
+      select:focus-visible,
+      input:focus-visible,
+      .tok:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      button:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+      button.on,
+      button.primary {
+        background: var(--btn-on-bg);
+        color: var(--btn-on-ink);
+        border-color: var(--btn-on-bg);
+      }
+      .panels {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+      .pane {
+        background: var(--panel);
+        border: 1.5px dashed var(--line);
+        border-radius: 14px;
+        padding: 16px;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .pane.kv {
+        flex: 1 1 340px;
+      }
+      .pane.st {
+        flex: 2 1 480px;
+      }
+      .pane h2 {
+        font-size: 17px;
+        margin: 0;
+        font-weight: 600;
+      }
+      .sub {
+        font-size: 13px;
+        color: var(--muted);
+        margin: 0;
+      }
+      .sec {
+        font-size: 12px;
+        font-weight: 600;
+        margin-top: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+      }
+      .scroll {
+        overflow-x: auto;
+      }
+      table {
+        border-collapse: collapse;
+        font-family: var(--mono);
+        font-size: 12px;
+        width: 100%;
+        font-variant-numeric: tabular-nums;
+      }
+      td,
+      th {
+        border: 1px solid var(--soft);
+        padding: 5px 6px;
+        text-align: center;
+        white-space: nowrap;
+      }
+      th {
+        font-family: var(--sans);
+        font-weight: 500;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      tr.new td {
+        background: var(--accent-bg);
+      }
+      .rule {
+        font-family: var(--mono);
+        font-size: 13px;
+        padding: 7px 10px;
+        border-radius: 8px;
+        background: var(--soft);
+      }
+      .mono {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--muted);
+        overflow-wrap: anywhere;
+      }
+      .eq {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: max-content;
+      }
+      .op {
+        font-size: 20px;
+        color: var(--muted);
+      }
+      .mat {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+      }
+      .mat .lab {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      .grid {
+        display: grid;
+        gap: 2px;
+      }
+      .grid div {
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--mono);
+        font-size: 11px;
+        border: 1px solid var(--soft);
+        border-radius: 4px;
+        font-variant-numeric: tabular-nums;
+      }
+      .grid.d8 div {
+        height: 24px;
+        font-size: 10px;
+      }
+      .grid.added div {
+        border-color: var(--accent);
+      }
+      .mem {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .mem b {
+        color: var(--ink);
+        font-weight: 600;
+      }
+      .out {
+        padding: 9px 12px;
+        border-radius: 8px;
+        background: var(--btn-on-bg);
+        color: var(--btn-on-ink);
+        font-family: var(--mono);
+        font-size: 13px;
+        overflow-wrap: anywhere;
+      }
+      .small {
+        font-size: 12.5px;
+        color: var(--muted);
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+      }
+      .note {
+        background: var(--panel);
+        border: 1.5px dashed var(--line);
+        border-radius: 14px;
+        padding: 14px 16px;
+      }
+      .note p {
+        margin: 0;
+        max-width: 85ch;
+      }
+      .howto {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 14px;
+      }
+      .howto div {
+        font-size: 14px;
+      }
+      .howto b {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 2px;
+      }
+      footer {
+        font-size: 13px;
+        color: var(--muted);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 16px;
+        border-top: 1px solid var(--soft);
+        padding-top: 14px;
+      }
+      footer a {
+        color: var(--ink);
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        .grid div {
+          transition: background-color 0.25s;
+        }
+      }
+    </style>
+  </head>
+  <body style="margin: 0">
+    <div class="page">
+      <header>
+        <div class="eyebrow">FastBatch</div>
+        <h1>Where does a model keep the past?</h1>
+        <p class="lede">
+          Type a sentence and feed it in one token at a time. On the left, softmax attention stores every token in a
+          growing KV cache. On the right, linear attention, SSMs and delta-rule models squeeze everything into one fixed
+          d×d state. Switch the update rule to see how each one writes, forgets and reads.
+        </p>
+      </header>
 
-<div class="page">
-  <header>
-    <div class="eyebrow">FastBatch</div>
-    <h1>Where does a model keep the past?</h1>
-    <p class="lede">Type a sentence and feed it in one token at a time. On the left, softmax attention stores every token in a growing KV cache. On the right, linear attention, SSMs and delta-rule models squeeze everything into one fixed d×d state. Switch the update rule to see how each one writes, forgets and reads.</p>
-  </header>
+      <section class="bar" aria-label="Input and controls">
+        <form class="input" id="form" novalidate>
+          <div class="field">
+            <label for="text">Your sentence (up to 16 words)</label>
+            <input
+              type="text"
+              id="text"
+              autocomplete="off"
+              spellcheck="false"
+              value="the cat sat on the mat"
+              aria-describedby="err"
+            />
+            <div class="err" id="err" role="alert"></div>
+          </div>
+          <div class="field" style="flex: 0 0 auto">
+            <label for="dim">Memory size d</label>
+            <select id="dim">
+              <option value="4" selected>4 (16 numbers)</option>
+              <option value="8">8 (64 numbers)</option>
+            </select>
+          </div>
+          <div class="field" style="flex: 0 0 auto">
+            <label>&nbsp;</label>
+            <button type="submit" class="primary" id="run">Load sentence</button>
+          </div>
+        </form>
+        <div class="presets">
+          <span class="lbl">Try:</span>
+          <button type="button" class="chip" data-p="the cat sat on the mat">the cat sat on the mat</button>
+          <button type="button" class="chip" data-p="Alice lives in Paris but Alice moved to Tokyo">
+            Alice lives in Paris … Alice moved to Tokyo
+          </button>
+          <button type="button" class="chip" data-p="one two three four five six seven eight nine ten">
+            ten different words
+          </button>
+        </div>
+        <div class="sent" id="sent" aria-label="Tokens; click one to jump there"></div>
+        <div class="row">
+          <button type="button" id="prev">Previous</button>
+          <button type="button" id="next">Next token</button>
+          <button type="button" id="all">Show all</button>
+          <button type="button" id="reset">Reset</button>
+          <span class="lbl" style="margin-left: 6px">Query with</span>
+          <select id="qsel" aria-label="Query token"></select>
+        </div>
+        <div class="row" role="group" aria-label="State update rule">
+          <span class="lbl">Update rule for S</span>
+          <button type="button" data-m="plain" class="on">Linear attention</button>
+          <button type="button" data-m="ssm">SSM (Mamba-2)</button>
+          <button type="button" data-m="delta">Delta rule</button>
+          <button type="button" data-m="gdn">Gated DeltaNet</button>
+        </div>
+      </section>
 
-  <section class="bar" aria-label="Input and controls">
-    <form class="input" id="form" novalidate>
-      <div class="field">
-        <label for="text">Your sentence (up to 16 words)</label>
-        <input type="text" id="text" autocomplete="off" spellcheck="false" value="the cat sat on the mat" aria-describedby="err">
-        <div class="err" id="err" role="alert"></div>
+      <div class="note" aria-live="polite"><p id="note"></p></div>
+
+      <div class="panels">
+        <section class="pane kv">
+          <h2>Softmax attention · KV cache</h2>
+          <p class="sub">One (k, v) row per token, read with softmax weights.</p>
+          <div class="scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>token</th>
+                  <th>key k</th>
+                  <th>value v</th>
+                  <th>k·q</th>
+                  <th>softmax</th>
+                </tr>
+              </thead>
+              <tbody id="kv"></tbody>
+            </table>
+          </div>
+          <div class="mem" id="kvmem"></div>
+          <div class="sec">Output</div>
+          <div class="small">o = Σ softmax(k·q) · v, a weighted average of the stored values</div>
+          <div class="out" id="kvout">—</div>
+        </section>
+
+        <section class="pane st">
+          <h2 id="stitle"></h2>
+          <p class="sub" id="ssub"></p>
+          <div class="rule" id="rule"></div>
+          <div class="mono" id="curkv"></div>
+          <div class="scroll">
+            <div class="eq">
+              <div class="mat">
+                <div class="grid" id="gPrev"></div>
+                <div class="lab" id="lPrev">S before</div>
+              </div>
+              <div class="op">+</div>
+              <div class="mat">
+                <div class="grid added" id="gAdd"></div>
+                <div class="lab" id="lAdd">v kᵀ</div>
+              </div>
+              <div class="op">=</div>
+              <div class="mat">
+                <div class="grid" id="gNew"></div>
+                <div class="lab">S after</div>
+              </div>
+            </div>
+          </div>
+          <div class="mem" id="smem"></div>
+          <div class="sec">Output</div>
+          <div class="scroll">
+            <div class="eq">
+              <div class="mat">
+                <div class="grid" id="gRead"></div>
+                <div class="lab">S</div>
+              </div>
+              <div class="op">×</div>
+              <div class="mat">
+                <div class="grid" id="gQ"></div>
+                <div class="lab">q</div>
+              </div>
+              <div class="op">=</div>
+              <div class="mat">
+                <div class="grid" id="gO"></div>
+                <div class="lab">o</div>
+              </div>
+            </div>
+          </div>
+          <div class="out" id="sout">—</div>
+          <div class="small" id="scheck"></div>
+        </section>
       </div>
-      <div class="field" style="flex:0 0 auto">
-        <label for="dim">Memory size d</label>
-        <select id="dim"><option value="4" selected>4 (16 numbers)</option><option value="8">8 (64 numbers)</option></select>
-      </div>
-      <div class="field" style="flex:0 0 auto">
-        <label>&nbsp;</label>
-        <button type="submit" class="primary" id="run">Load sentence</button>
-      </div>
-    </form>
-    <div class="presets">
-      <span class="lbl">Try:</span>
-      <button type="button" class="chip" data-p="the cat sat on the mat">the cat sat on the mat</button>
-      <button type="button" class="chip" data-p="Alice lives in Paris but Alice moved to Tokyo">Alice lives in Paris … Alice moved to Tokyo</button>
-      <button type="button" class="chip" data-p="one two three four five six seven eight nine ten">ten different words</button>
+
+      <section class="howto" aria-label="How to read this">
+        <div>
+          <b>Colors</b>Green cells are positive, orange cells negative; darker means larger. The middle matrix (orange
+          border) is what the current token writes.
+        </div>
+        <div>
+          <b>Where the vectors come from</b>A real model computes k, v and q with learned weights. Here each word gets a
+          fixed random unit key (the same word always gets the same key), a random value that differs per position, and
+          q = k. Words are lowercased, so "The" and "the" share a key.
+        </div>
+        <div>
+          <b>The gate α</b>Shown under each word. Only the SSM and Gated DeltaNet rules use it: the old state is
+          multiplied by α before the new token is written. Here α is a fixed random number per word, standing in for a
+          learned gate.
+        </div>
+      </section>
+
+      <footer>
+        <span
+          >Built for the FastBatch post
+          <em>The Evolution of Attention: From Transformers to Gated DeltaNet and KDA</em>.</span
+        >
+        <a href="https://fastbatch.substack.com">fastbatch.substack.com</a>
+      </footer>
     </div>
-    <div class="sent" id="sent" aria-label="Tokens; click one to jump there"></div>
-    <div class="row">
-      <button type="button" id="prev">Previous</button>
-      <button type="button" id="next">Next token</button>
-      <button type="button" id="all">Show all</button>
-      <button type="button" id="reset">Reset</button>
-      <span class="lbl" style="margin-left:6px">Query with</span>
-      <select id="qsel" aria-label="Query token"></select>
-    </div>
-    <div class="row" role="group" aria-label="State update rule">
-      <span class="lbl">Update rule for S</span>
-      <button type="button" data-m="plain" class="on">Linear attention</button>
-      <button type="button" data-m="ssm">SSM (Mamba-2)</button>
-      <button type="button" data-m="delta">Delta rule</button>
-      <button type="button" data-m="gdn">Gated DeltaNet</button>
-    </div>
-  </section>
 
-  <div class="note" aria-live="polite"><p id="note"></p></div>
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const PRESET = 'the cat sat on the mat';
+      const PRESET_K = [
+        [0.5, 0.5, 0.5, 0.5],
+        [0.5, -0.5, 0.5, -0.5],
+        [0.5, 0.5, -0.5, -0.5],
+        [0.5, -0.5, -0.5, 0.5],
+        [0.5, 0.5, 0.5, 0.5],
+        [0.7, 0.1, 0.7, 0.1],
+      ];
+      const PRESET_V = [
+        [2, 0, 1, 0],
+        [0, 3, 0, 1],
+        [1, 1, 2, 0],
+        [0, 0, 1, 3],
+        [0, 2, 0, 2],
+        [3, 0, 0, 1],
+      ];
+      const PRESET_A = [1, 0.9, 0.9, 0.9, 0.3, 0.9];
+      const PRESET_NOTES = [
+        'Click Next token. Each token writes into memory, then its query reads an output. The KV cache keeps every token separately; S stays 4×4 no matter how many tokens arrive.',
+        '"the": every method returns exactly its value [2, 0, 1, 0]. The write v kᵀ touches all 16 cells, because every entry of the key is nonzero.',
+        '"cat" adds its own full 4×4 matrix on top. Every cell of S is now a sum of two tokens\' contributions. In SSM mode the old state is first multiplied by α = 0.9, so "the" fades a little.',
+        '"sat" adds a third matrix into the same 16 cells. The KV cache holds 24 numbers; S still holds 16.',
+        '"on": query "the" from the menu. These four keys are orthogonal, so linear attention still pulls out exactly v(the), even though all four tokens are mixed into every cell. The SSM returns a faded 0.73 × v(the).',
+        'Second "the": same key, new value. Linear attention adds both values. The SSM\'s gate α = 0.3 shrinks the whole state, so cat, sat and on fade too. The delta rule edits only the "the" direction and returns the new value [0, 2, 0, 2]. Gated DeltaNet does both.',
+        '"mat" overlaps with "the" (0.8) and "cat" (0.6). Query with "mat": linear attention returns v(mat) plus large pieces of the others. That is crosstalk: six tokens in a 4-dimensional memory.',
+      ];
+      const MODES = {
+        plain: {
+          title: 'Linear attention · state S',
+          sub: 'Write: add a d×d matrix. Read: multiply by q.',
+          rule: 'S ← S + v kᵀ',
+        },
+        ssm: {
+          title: 'SSM (Mamba-2) · state h',
+          sub: 'Same matrix state, but the old state decays by a gate α that each token predicts.',
+          rule: 'h ← α·h + B x     (B = k, x = v, read with C = q)',
+        },
+        delta: {
+          title: 'Delta rule (DeltaNet) · state S',
+          sub: 'Before writing, subtract what S already returns for this key.',
+          rule: 'S ← S + (v − S k) kᵀ',
+        },
+        gdn: {
+          title: 'Gated DeltaNet · state S',
+          sub: 'Decay everything by α, then make a targeted delta-rule edit.',
+          rule: 'S ← α·S + (v − α·S k) kᵀ',
+        },
+      };
 
-  <div class="panels">
-    <section class="pane kv">
-      <h2>Softmax attention · KV cache</h2>
-      <p class="sub">One (k, v) row per token, read with softmax weights.</p>
-      <div class="scroll"><table><thead><tr><th>token</th><th>key k</th><th>value v</th><th>k·q</th><th>softmax</th></tr></thead><tbody id="kv"></tbody></table></div>
-      <div class="mem" id="kvmem"></div>
-      <div class="sec">Output</div>
-      <div class="small">o = Σ softmax(k·q) · v, a weighted average of the stored values</div>
-      <div class="out" id="kvout">—</div>
-    </section>
+      let toks = [],
+        K = [],
+        V = [],
+        AL = [],
+        D = 4,
+        isPreset = true,
+        t = 0,
+        mode = 'plain';
 
-    <section class="pane st">
-      <h2 id="stitle"></h2>
-      <p class="sub" id="ssub"></p>
-      <div class="rule" id="rule"></div>
-      <div class="mono" id="curkv"></div>
-      <div class="scroll"><div class="eq">
-        <div class="mat"><div class="grid" id="gPrev"></div><div class="lab" id="lPrev">S before</div></div>
-        <div class="op">+</div>
-        <div class="mat"><div class="grid added" id="gAdd"></div><div class="lab" id="lAdd">v kᵀ</div></div>
-        <div class="op">=</div>
-        <div class="mat"><div class="grid" id="gNew"></div><div class="lab">S after</div></div>
-      </div></div>
-      <div class="mem" id="smem"></div>
-      <div class="sec">Output</div>
-      <div class="scroll"><div class="eq">
-        <div class="mat"><div class="grid" id="gRead"></div><div class="lab">S</div></div>
-        <div class="op">×</div>
-        <div class="mat"><div class="grid" id="gQ"></div><div class="lab">q</div></div>
-        <div class="op">=</div>
-        <div class="mat"><div class="grid" id="gO"></div><div class="lab">o</div></div>
-      </div></div>
-      <div class="out" id="sout">—</div>
-      <div class="small" id="scheck"></div>
-    </section>
-  </div>
+      function hash(s) {
+        let h = 2166136261;
+        for (let i = 0; i < s.length; i++) {
+          h ^= s.charCodeAt(i);
+          h = Math.imul(h, 16777619);
+        }
+        return h >>> 0;
+      }
+      function rng(seed) {
+        return function () {
+          seed |= 0;
+          seed = (seed + 0x6d2b79f5) | 0;
+          let x = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          x = (x + Math.imul(x ^ (x >>> 7), 61 | x)) ^ x;
+          return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+      function gauss(r) {
+        let s = 0;
+        for (let i = 0; i < 6; i++) s += r();
+        return s - 3;
+      }
+      function keyFor(w, d) {
+        const r = rng(hash('k:' + w + ':' + d));
+        let k = Array.from({ length: d }, () => gauss(r));
+        const n = Math.hypot(...k) || 1;
+        return k.map((x) => x / n);
+      }
+      function valFor(w, i, d) {
+        const r = rng(hash('v:' + w + ':' + i + ':' + d));
+        let v = Array.from({ length: d }, () => Math.floor(r() * 5) - 1);
+        if (v.every((x) => x === 0)) v[0] = 2;
+        return v;
+      }
+      function alphaFor(w) {
+        const r = rng(hash('a:' + w));
+        return Math.round((0.55 + 0.43 * r()) * 100) / 100;
+      }
 
-  <section class="howto" aria-label="How to read this">
-    <div><b>Colors</b>Green cells are positive, orange cells negative; darker means larger. The middle matrix (orange border) is what the current token writes.</div>
-    <div><b>Where the vectors come from</b>A real model computes k, v and q with learned weights. Here each word gets a fixed random unit key (the same word always gets the same key), a random value that differs per position, and q = k. Words are lowercased, so "The" and "the" share a key.</div>
-    <div><b>The gate α</b>Shown under each word. Only the SSM and Gated DeltaNet rules use it: the old state is multiplied by α before the new token is written. Here α is a fixed random number per word, standing in for a learned gate.</div>
-  </section>
+      function load(text, d) {
+        const words = text.trim().split(/\s+/).filter(Boolean);
+        toks = words;
+        D = d;
+        isPreset = text.trim().replace(/\s+/g, ' ') === PRESET && d === 4;
+        if (isPreset) {
+          K = PRESET_K;
+          V = PRESET_V;
+          AL = PRESET_A;
+        } else {
+          const norm = words.map((w) => w.toLowerCase().replace(/[^\p{L}\p{N}]/gu, '') || w.toLowerCase());
+          K = norm.map((w) => keyFor(w, d));
+          V = words.map((w, i) => valFor(norm[i], i, d));
+          AL = norm.map((w, i) => (i === 0 ? 1 : alphaFor(w)));
+        }
+        t = 0;
+        render();
+      }
 
-  <footer>
-    <span>Built for the FastBatch post <em>The Evolution of Attention: From Transformers to Gated DeltaNet and KDA</em>.</span>
-    <a href="https://fastbatch.substack.com">fastbatch.substack.com</a>
-  </footer>
-</div>
+      const r2 = (x) => {
+        const y = Math.round(x * 100) / 100;
+        return Math.abs(y) < 1e-9 ? 0 : y;
+      };
+      const vec = (a) => '[' + a.map(r2).join(', ') + ']';
+      const fmt = (x) => String(r2(x));
+      const dot = (a, b) => a.reduce((s, x, i) => s + x * b[i], 0);
+      const gated = () => mode === 'ssm' || mode === 'gdn',
+        isDelta = () => mode === 'delta' || mode === 'gdn';
+      const zeros = () => Array.from({ length: D }, () => Array(D).fill(0));
+      function states() {
+        let S = zeros(),
+          pre = S,
+          add = S,
+          tgt = null;
+        for (let s = 0; s < t; s++) {
+          const k = K[s],
+            a = gated() ? AL[s] : 1;
+          const S0 = S.map((r) => r.map((x) => a * x));
+          let g = V[s].slice();
+          if (isDelta()) {
+            const r = S0.map((row) => dot(row, k));
+            g = g.map((x, i) => x - r[i]);
+          }
+          const A = g.map((gi) => k.map((kj) => gi * kj));
+          pre = S0;
+          add = A;
+          tgt = g;
+          S = S0.map((row, i) => row.map((x, j) => x + A[i][j]));
+        }
+        return { pre, add, S, tgt };
+      }
+      let mx = 1;
+      const cell = (x) => {
+        const a = Math.min(Math.abs(x) / mx, 1) * 0.75;
+        return `<div style="background:rgba(${x >= 0 ? '29,158,117' : '216,90,48'},${a})">${fmt(x)}</div>`;
+      };
+      function grid(id, M, cols) {
+        const el = $(id),
+          w = D === 8 ? 36 : 42;
+        el.style.gridTemplateColumns = `repeat(${cols},${cols === 1 ? w + 4 : w}px)`;
+        el.classList.toggle('d8', D === 8);
+        el.innerHTML = M.flat().map(cell).join('');
+      }
 
-<script>
-const $=id=>document.getElementById(id);
-const PRESET="the cat sat on the mat";
-const PRESET_K=[[0.5,0.5,0.5,0.5],[0.5,-0.5,0.5,-0.5],[0.5,0.5,-0.5,-0.5],[0.5,-0.5,-0.5,0.5],[0.5,0.5,0.5,0.5],[0.7,0.1,0.7,0.1]];
-const PRESET_V=[[2,0,1,0],[0,3,0,1],[1,1,2,0],[0,0,1,3],[0,2,0,2],[3,0,0,1]];
-const PRESET_A=[1,0.9,0.9,0.9,0.3,0.9];
-const PRESET_NOTES=[
-"Click Next token. Each token writes into memory, then its query reads an output. The KV cache keeps every token separately; S stays 4×4 no matter how many tokens arrive.",
-"\"the\": every method returns exactly its value [2, 0, 1, 0]. The write v kᵀ touches all 16 cells, because every entry of the key is nonzero.",
-"\"cat\" adds its own full 4×4 matrix on top. Every cell of S is now a sum of two tokens' contributions. In SSM mode the old state is first multiplied by α = 0.9, so \"the\" fades a little.",
-"\"sat\" adds a third matrix into the same 16 cells. The KV cache holds 24 numbers; S still holds 16.",
-"\"on\": query \"the\" from the menu. These four keys are orthogonal, so linear attention still pulls out exactly v(the), even though all four tokens are mixed into every cell. The SSM returns a faded 0.73 × v(the).",
-"Second \"the\": same key, new value. Linear attention adds both values. The SSM's gate α = 0.3 shrinks the whole state, so cat, sat and on fade too. The delta rule edits only the \"the\" direction and returns the new value [0, 2, 0, 2]. Gated DeltaNet does both.",
-"\"mat\" overlaps with \"the\" (0.8) and \"cat\" (0.6). Query with \"mat\": linear attention returns v(mat) plus large pieces of the others. That is crosstalk: six tokens in a 4-dimensional memory."];
-const MODES={
- plain:{title:"Linear attention · state S",sub:"Write: add a d×d matrix. Read: multiply by q.",rule:"S ← S + v kᵀ"},
- ssm:{title:"SSM (Mamba-2) · state h",sub:"Same matrix state, but the old state decays by a gate α that each token predicts.",rule:"h ← α·h + B x     (B = k, x = v, read with C = q)"},
- delta:{title:"Delta rule (DeltaNet) · state S",sub:"Before writing, subtract what S already returns for this key.",rule:"S ← S + (v − S k) kᵀ"},
- gdn:{title:"Gated DeltaNet · state S",sub:"Decay everything by α, then make a targeted delta-rule edit.",rule:"S ← α·S + (v − α·S k) kᵀ"}};
+      function dynNote(qi) {
+        if (t === 0)
+          return `Click Next token. Each token writes into memory, then its query reads an output. The KV cache keeps every token separately; S stays ${D}×${D} no matter how many tokens arrive.`;
+        const i = t - 1,
+          w = toks[i],
+          lw = w.toLowerCase();
+        const prevSame = toks.slice(0, i).findIndex((x) => x.toLowerCase() === lw);
+        if (prevSame >= 0)
+          return `"${w}" appeared before, so it has the same key but a new value. The KV cache keeps both rows. Linear attention adds the new value on top of the old one; the delta rule replaces it. Compare the outputs in each mode.`;
+        if (t === D + 1)
+          return `Token ${t} in a ${D}-dimensional memory: there are now more tokens than directions in key space, so their keys must overlap and S can no longer return each value cleanly. The KV cache does not have this limit; it just keeps growing.`;
+        let best = -1,
+          bi = -1;
+        for (let s = 0; s < i; s++) {
+          const o = Math.abs(dot(K[s], K[i]));
+          if (o > best) {
+            best = o;
+            bi = s;
+          }
+        }
+        if (i === 0)
+          return `"${w}" is the first token, so every method returns its value exactly. The write v kᵀ touches every cell of S, because every entry of the key is nonzero.`;
+        return `"${w}" adds a full ${D}×${D} matrix into S. Its key overlaps most with "${toks[bi]}" (|k·k| = ${best.toFixed(2)}), so reading "${w}" from S also returns some of "${toks[bi]}"'s value. The softmax read is sharper because exp() amplifies the best match.`;
+      }
 
-let toks=[],K=[],V=[],AL=[],D=4,isPreset=true,t=0,mode="plain";
+      function render() {
+        $('sent').innerHTML = toks
+          .map(
+            (w, i) =>
+              `<span class="tok ${i < t - 1 ? 'done' : i == t - 1 ? 'cur' : 'fut'}" tabindex="0" data-i="${i}">${w.replace(/</g, '&lt;')}<small>α=${AL[i]}</small></span>`
+          )
+          .join('');
+        const qsel = $('qsel'),
+          prevVal = qsel.value;
+        const seen = [];
+        toks.slice(0, t).forEach((w, i) => {
+          if (!seen.some((s) => s.w.toLowerCase() === w.toLowerCase())) seen.push({ w, i });
+        });
+        qsel.innerHTML =
+          `<option value="cur">current token</option>` +
+          seen.map((s) => `<option value="${s.i}">"${s.w.replace(/</g, '&lt;')}"</option>`).join('');
+        qsel.value = [...qsel.options].some((o) => o.value === prevVal) ? prevVal : 'cur';
+        const qi = qsel.value === 'cur' ? t - 1 : +qsel.value,
+          q = t > 0 ? K[qi] : Array(D).fill(0);
+        const st = states();
+        mx = 1;
+        [st.pre, st.add, st.S].forEach((M) => M.forEach((r) => r.forEach((x) => (mx = Math.max(mx, Math.abs(x))))));
+        let w = [];
+        if (t > 0) {
+          const sc = K.slice(0, t).map((k) => 4 * dot(k, q)),
+            m = Math.max(...sc),
+            e = sc.map((x) => Math.exp(x - m)),
+            Z = e.reduce((a, b) => a + b);
+          w = e.map((x) => x / Z);
+        }
+        $('kv').innerHTML =
+          toks
+            .slice(0, t)
+            .map(
+              (tk, i) =>
+                `<tr class="${i == t - 1 ? 'new' : ''}"><td>${tk.replace(/</g, '&lt;')}</td><td>${vec(K[i])}</td><td>${vec(V[i])}</td><td>${fmt(dot(K[i], q))}</td><td>${w[i].toFixed(2)}</td></tr>`
+            )
+            .join('') || `<tr><td colspan="5" style="color:var(--muted)">empty</td></tr>`;
+        $('kvmem').innerHTML = `Memory: <b>${t} rows × ${2 * D} = ${2 * D * t} numbers</b>, growing with every token`;
+        $('stitle').textContent = MODES[mode].title;
+        $('ssub').textContent = MODES[mode].sub.replace('d×d', `${D}×${D}`);
+        $('rule').textContent = MODES[mode].rule;
+        const a = t > 0 ? AL[t - 1] : 1;
+        $('lPrev').textContent = gated() && t > 0 ? `α·S before (α=${a})` : 'S before';
+        $('lAdd').textContent = isDelta() ? (gated() ? '(v − α·S k) kᵀ' : '(v − S k) kᵀ') : 'v kᵀ';
+        grid('gPrev', st.pre, D);
+        grid('gAdd', st.add, D);
+        grid('gNew', st.S, D);
+        grid('gRead', st.S, D);
+        $('curkv').textContent =
+          t == 0
+            ? 'No token yet'
+            : `Write "${toks[t - 1]}": k = ${vec(K[t - 1])}, v = ${vec(V[t - 1])}` +
+              (gated() ? `, α = ${a}` : '') +
+              (isDelta() ? `  → writes ${vec(st.tgt)}` : '');
+        $('smem').innerHTML = `Memory: <b>${D} × ${D} = ${D * D} numbers</b>, always`;
+        const ql = t ? `q = k("${toks[qi]}")` : '';
+        if (t == 0) {
+          $('kvout').textContent = '—';
+          $('sout').textContent = '—';
+          grid(
+            'gQ',
+            Array(D)
+              .fill(0)
+              .map((x) => [x]),
+            1
+          );
+          grid(
+            'gO',
+            Array(D)
+              .fill(0)
+              .map((x) => [x]),
+            1
+          );
+          $('scheck').textContent = '';
+        } else {
+          const o = Array.from({ length: D }, (_, i) => w.reduce((acc, wi, s) => acc + wi * V[s][i], 0));
+          $('kvout').textContent = `${ql}  →  o = ${vec(o)}`;
+          const so = st.S.map((r) => dot(r, q));
+          grid(
+            'gQ',
+            q.map((x) => [x]),
+            1
+          );
+          grid(
+            'gO',
+            so.map((x) => [x]),
+            1
+          );
+          $('sout').textContent = `${ql}  →  o = ${vec(so)}`;
+          if (isDelta())
+            $('scheck').textContent =
+              'With a delta rule, S q is no longer a weighted sum of the table rows: values for a repeated key are overwritten, not added.';
+          else {
+            const parts = toks.slice(0, t).map((tk, s) => {
+              let d = 1;
+              if (gated()) for (let u = s + 1; u < t; u++) d *= AL[u];
+              return `${fmt(d * dot(K[s], q))}·v(${tk})`;
+            });
+            $('scheck').textContent =
+              (gated()
+                ? 'Same result from the table: S q = Σ (decay since that token) × (k·q) × v = '
+                : 'Same result from the table: S q = Σ (k·q) × v, raw weights with no softmax = ') + parts.join(' + ');
+          }
+        }
+        $('note').textContent = isPreset ? PRESET_NOTES[t] : dynNote(qi);
+        $('prev').disabled = t == 0;
+        $('next').disabled = t == toks.length;
+        $('all').disabled = t == toks.length;
+        $('reset').disabled = t == 0;
+      }
 
-function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
-function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let x=Math.imul(seed^seed>>>15,1|seed);x=x+Math.imul(x^x>>>7,61|x)^x;return((x^x>>>14)>>>0)/4294967296;};}
-function gauss(r){let s=0;for(let i=0;i<6;i++)s+=r();return s-3;}
-function keyFor(w,d){const r=rng(hash("k:"+w+":"+d));let k=Array.from({length:d},()=>gauss(r));const n=Math.hypot(...k)||1;return k.map(x=>x/n);}
-function valFor(w,i,d){const r=rng(hash("v:"+w+":"+i+":"+d));let v=Array.from({length:d},()=>Math.floor(r()*5)-1);if(v.every(x=>x===0))v[0]=2;return v;}
-function alphaFor(w){const r=rng(hash("a:"+w));return Math.round((0.55+0.43*r())*100)/100;}
-
-function load(text,d){
-  const words=text.trim().split(/\s+/).filter(Boolean);
-  toks=words;D=d;
-  isPreset=(text.trim().replace(/\s+/g," ")===PRESET&&d===4);
-  if(isPreset){K=PRESET_K;V=PRESET_V;AL=PRESET_A;}
-  else{const norm=words.map(w=>w.toLowerCase().replace(/[^\p{L}\p{N}]/gu,"")||w.toLowerCase());
-    K=norm.map(w=>keyFor(w,d));V=words.map((w,i)=>valFor(norm[i],i,d));AL=norm.map((w,i)=>i===0?1:alphaFor(w));}
-  t=0;render();
-}
-
-const r2=x=>{const y=Math.round(x*100)/100;return Math.abs(y)<1e-9?0:y;};
-const vec=a=>"["+a.map(r2).join(", ")+"]";
-const fmt=x=>String(r2(x));
-const dot=(a,b)=>a.reduce((s,x,i)=>s+x*b[i],0);
-const gated=()=>mode==="ssm"||mode==="gdn", isDelta=()=>mode==="delta"||mode==="gdn";
-const zeros=()=>Array.from({length:D},()=>Array(D).fill(0));
-function states(){let S=zeros(),pre=S,add=S,tgt=null;for(let s=0;s<t;s++){const k=K[s],a=gated()?AL[s]:1;const S0=S.map(r=>r.map(x=>a*x));let g=V[s].slice();if(isDelta()){const r=S0.map(row=>dot(row,k));g=g.map((x,i)=>x-r[i]);}const A=g.map(gi=>k.map(kj=>gi*kj));pre=S0;add=A;tgt=g;S=S0.map((row,i)=>row.map((x,j)=>x+A[i][j]));}return {pre,add,S,tgt};}
-let mx=1;
-const cell=x=>{const a=Math.min(Math.abs(x)/mx,1)*0.75;return `<div style="background:rgba(${x>=0?'29,158,117':'216,90,48'},${a})">${fmt(x)}</div>`;};
-function grid(id,M,cols){const el=$(id),w=D===8?36:42;el.style.gridTemplateColumns=`repeat(${cols},${cols===1?w+4:w}px)`;el.classList.toggle("d8",D===8);el.innerHTML=M.flat().map(cell).join("");}
-
-function dynNote(qi){
-  if(t===0)return `Click Next token. Each token writes into memory, then its query reads an output. The KV cache keeps every token separately; S stays ${D}×${D} no matter how many tokens arrive.`;
-  const i=t-1,w=toks[i],lw=w.toLowerCase();
-  const prevSame=toks.slice(0,i).findIndex(x=>x.toLowerCase()===lw);
-  if(prevSame>=0)return `"${w}" appeared before, so it has the same key but a new value. The KV cache keeps both rows. Linear attention adds the new value on top of the old one; the delta rule replaces it. Compare the outputs in each mode.`;
-  if(t===D+1)return `Token ${t} in a ${D}-dimensional memory: there are now more tokens than directions in key space, so their keys must overlap and S can no longer return each value cleanly. The KV cache does not have this limit; it just keeps growing.`;
-  let best=-1,bi=-1;for(let s=0;s<i;s++){const o=Math.abs(dot(K[s],K[i]));if(o>best){best=o;bi=s;}}
-  if(i===0)return `"${w}" is the first token, so every method returns its value exactly. The write v kᵀ touches every cell of S, because every entry of the key is nonzero.`;
-  return `"${w}" adds a full ${D}×${D} matrix into S. Its key overlaps most with "${toks[bi]}" (|k·k| = ${best.toFixed(2)}), so reading "${w}" from S also returns some of "${toks[bi]}"'s value. The softmax read is sharper because exp() amplifies the best match.`;
-}
-
-function render(){
-  $("sent").innerHTML=toks.map((w,i)=>`<span class="tok ${i<t-1?'done':i==t-1?'cur':'fut'}" tabindex="0" data-i="${i}">${w.replace(/</g,"&lt;")}<small>α=${AL[i]}</small></span>`).join("");
-  const qsel=$("qsel"),prevVal=qsel.value;
-  const seen=[];toks.slice(0,t).forEach((w,i)=>{if(!seen.some(s=>s.w.toLowerCase()===w.toLowerCase()))seen.push({w,i});});
-  qsel.innerHTML=`<option value="cur">current token</option>`+seen.map(s=>`<option value="${s.i}">"${s.w.replace(/</g,"&lt;")}"</option>`).join("");
-  qsel.value=[...qsel.options].some(o=>o.value===prevVal)?prevVal:"cur";
-  const qi=qsel.value==="cur"?t-1:+qsel.value, q=t>0?K[qi]:Array(D).fill(0);
-  const st=states();mx=1;[st.pre,st.add,st.S].forEach(M=>M.forEach(r=>r.forEach(x=>mx=Math.max(mx,Math.abs(x)))));
-  let w=[];if(t>0){const sc=K.slice(0,t).map(k=>4*dot(k,q)),m=Math.max(...sc),e=sc.map(x=>Math.exp(x-m)),Z=e.reduce((a,b)=>a+b);w=e.map(x=>x/Z);}
-  $("kv").innerHTML=toks.slice(0,t).map((tk,i)=>`<tr class="${i==t-1?'new':''}"><td>${tk.replace(/</g,"&lt;")}</td><td>${vec(K[i])}</td><td>${vec(V[i])}</td><td>${fmt(dot(K[i],q))}</td><td>${w[i].toFixed(2)}</td></tr>`).join("")||`<tr><td colspan="5" style="color:var(--muted)">empty</td></tr>`;
-  $("kvmem").innerHTML=`Memory: <b>${t} rows × ${2*D} = ${2*D*t} numbers</b>, growing with every token`;
-  $("stitle").textContent=MODES[mode].title;$("ssub").textContent=MODES[mode].sub.replace("d×d",`${D}×${D}`);$("rule").textContent=MODES[mode].rule;
-  const a=t>0?AL[t-1]:1;
-  $("lPrev").textContent=gated()&&t>0?`α·S before (α=${a})`:"S before";
-  $("lAdd").textContent=isDelta()?(gated()?"(v − α·S k) kᵀ":"(v − S k) kᵀ"):"v kᵀ";
-  grid("gPrev",st.pre,D);grid("gAdd",st.add,D);grid("gNew",st.S,D);grid("gRead",st.S,D);
-  $("curkv").textContent=t==0?"No token yet":`Write "${toks[t-1]}": k = ${vec(K[t-1])}, v = ${vec(V[t-1])}`+(gated()?`, α = ${a}`:"")+(isDelta()?`  → writes ${vec(st.tgt)}`:"");
-  $("smem").innerHTML=`Memory: <b>${D} × ${D} = ${D*D} numbers</b>, always`;
-  const ql=t?`q = k("${toks[qi]}")`:"";
-  if(t==0){$("kvout").textContent="—";$("sout").textContent="—";grid("gQ",Array(D).fill(0).map(x=>[x]),1);grid("gO",Array(D).fill(0).map(x=>[x]),1);$("scheck").textContent="";}
-  else{
-    const o=Array.from({length:D},(_,i)=>w.reduce((acc,wi,s)=>acc+wi*V[s][i],0));$("kvout").textContent=`${ql}  →  o = ${vec(o)}`;
-    const so=st.S.map(r=>dot(r,q));grid("gQ",q.map(x=>[x]),1);grid("gO",so.map(x=>[x]),1);$("sout").textContent=`${ql}  →  o = ${vec(so)}`;
-    if(isDelta())$("scheck").textContent="With a delta rule, S q is no longer a weighted sum of the table rows: values for a repeated key are overwritten, not added.";
-    else{const parts=toks.slice(0,t).map((tk,s)=>{let d=1;if(gated())for(let u=s+1;u<t;u++)d*=AL[u];return `${fmt(d*dot(K[s],q))}·v(${tk})`;});
-      $("scheck").textContent=(gated()?"Same result from the table: S q = Σ (decay since that token) × (k·q) × v = ":"Same result from the table: S q = Σ (k·q) × v, raw weights with no softmax = ")+parts.join(" + ");}
-  }
-  $("note").textContent=isPreset?PRESET_NOTES[t]:dynNote(qi);
-  $("prev").disabled=t==0;$("next").disabled=t==toks.length;$("all").disabled=t==toks.length;$("reset").disabled=t==0;
-}
-
-$("form").addEventListener("submit",e=>{
-  e.preventDefault();
-  const txt=$("text").value,n=txt.trim().split(/\s+/).filter(Boolean).length;
-  if(n===0)return showErr("Enter at least one word.");
-  if(n>16)return showErr(`That's ${n} words. Use 16 or fewer so the tables stay readable.`);
-  showErr("");load(txt,+$("dim").value);
-});
-function showErr(m){$("err").textContent=m;$("text").setAttribute("aria-invalid",m?"true":"false");}
-$("text").addEventListener("input",()=>showErr(""));
-$("dim").addEventListener("change",()=>$("form").requestSubmit());
-document.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{$("text").value=b.dataset.p;showErr("");load(b.dataset.p,+$("dim").value);});
-$("next").onclick=()=>{if(t<toks.length){t++;render();}};
-$("prev").onclick=()=>{if(t>0){t--;render();}};
-$("all").onclick=()=>{t=toks.length;render();};
-$("reset").onclick=()=>{t=0;render();};
-$("qsel").onchange=render;
-$("sent").addEventListener("click",e=>{const el=e.target.closest(".tok");if(el){t=+el.dataset.i+1;render();}});
-$("sent").addEventListener("keydown",e=>{const el=e.target.closest(".tok");if(el&&(e.key==="Enter"||e.key===" ")){e.preventDefault();t=+el.dataset.i+1;render();}});
-document.querySelectorAll("button[data-m]").forEach(b=>b.onclick=()=>{mode=b.dataset.m;document.querySelectorAll("button[data-m]").forEach(x=>x.classList.toggle("on",x===b));render();});
-document.addEventListener("keydown",e=>{if(["INPUT","SELECT"].includes(e.target.tagName))return;if(e.key==="ArrowRight")$("next").click();if(e.key==="ArrowLeft")$("prev").click();});
-load(PRESET,4);
-</script>
-</body>
+      $('form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const txt = $('text').value,
+          n = txt.trim().split(/\s+/).filter(Boolean).length;
+        if (n === 0) return showErr('Enter at least one word.');
+        if (n > 16) return showErr(`That's ${n} words. Use 16 or fewer so the tables stay readable.`);
+        showErr('');
+        load(txt, +$('dim').value);
+      });
+      function showErr(m) {
+        $('err').textContent = m;
+        $('text').setAttribute('aria-invalid', m ? 'true' : 'false');
+      }
+      $('text').addEventListener('input', () => showErr(''));
+      $('dim').addEventListener('change', () => $('form').requestSubmit());
+      document.querySelectorAll('[data-p]').forEach(
+        (b) =>
+          (b.onclick = () => {
+            $('text').value = b.dataset.p;
+            showErr('');
+            load(b.dataset.p, +$('dim').value);
+          })
+      );
+      $('next').onclick = () => {
+        if (t < toks.length) {
+          t++;
+          render();
+        }
+      };
+      $('prev').onclick = () => {
+        if (t > 0) {
+          t--;
+          render();
+        }
+      };
+      $('all').onclick = () => {
+        t = toks.length;
+        render();
+      };
+      $('reset').onclick = () => {
+        t = 0;
+        render();
+      };
+      $('qsel').onchange = render;
+      $('sent').addEventListener('click', (e) => {
+        const el = e.target.closest('.tok');
+        if (el) {
+          t = +el.dataset.i + 1;
+          render();
+        }
+      });
+      $('sent').addEventListener('keydown', (e) => {
+        const el = e.target.closest('.tok');
+        if (el && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          t = +el.dataset.i + 1;
+          render();
+        }
+      });
+      document.querySelectorAll('button[data-m]').forEach(
+        (b) =>
+          (b.onclick = () => {
+            mode = b.dataset.m;
+            document.querySelectorAll('button[data-m]').forEach((x) => x.classList.toggle('on', x === b));
+            render();
+          })
+      );
+      document.addEventListener('keydown', (e) => {
+        if (['INPUT', 'SELECT'].includes(e.target.tagName)) return;
+        if (e.key === 'ArrowRight') $('next').click();
+        if (e.key === 'ArrowLeft') $('prev').click();
+      });
+      load(PRESET, 4);
+    </script>
+  </body>
 </html>
